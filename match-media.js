@@ -117,7 +117,7 @@ angular.module('matchMedia', [])
   // The 'scope' parameter is optional. If it's not passed in, '$rootScope' is used.
   this.on = function(list, callback, scope) {
     window.addEventListener('resize', function(event) {
-      safeApply(callback(that.is(list)), scope);
+      safeApply(callback(that.is(list), that.which()), scope);
     });
 
     return that.is(list);
@@ -128,10 +128,22 @@ angular.module('matchMedia', [])
   this.when = function(list, callback, scope) {
     window.addEventListener('resize', function(event) {
       if (that.is(list) === true) {
-        safeApply(callback(that.is(list)), scope);
+        safeApply(callback(that.is(list), that.which()), scope);
       }
     });
 
     return that.is(list);
+  };
+  
+  // Returns an array of rules that matches the current screen size.
+  this.which = function() {
+    var rules = this.rules || defaultRules,
+        matches = [];
+    for (var size in rules) {
+      if (window.matchMedia(rules[size]).matches) {
+        matches.push(size);
+      }
+    }
+    return matches;
   };
 }]);
